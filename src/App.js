@@ -15,16 +15,20 @@ import rootReducer from './rootReducer'
 import MoviesList from './MoviesList';
 import MovieDetail from './MovieDetail';
 import {Provider} from 'react-redux';
-import {createStore} from 'redux';
+import {applyMiddleware, createStore} from 'redux';
 import {composeWithDevTools} from  'redux-devtools-extension'
 import Toggle from './Toggle'
+import logger from 'redux-logger'
+import thunk from 'redux-thunk'
+
+const middleware = [logger, thunk]
 
 
 // const hello=() =>('hello')
 const store = createStore(
   rootReducer,
   {}, //initial state
-  composeWithDevTools(),
+  composeWithDevTools(applyMiddleware(...middleware)),
 )
 
 const App = () => (
