@@ -6,6 +6,7 @@ import {
   Switch,
   Link,
 } from 'react-router-dom';
+import {save, load} from 'redux-localstorage-simple'
 
 import logo from './logo.svg';
 import './App.css';
@@ -27,8 +28,8 @@ const middleware = [logger, thunk]
 // const hello=() =>('hello')
 const store = createStore(
   rootReducer,
-  {}, //initial state
-  composeWithDevTools(applyMiddleware(...middleware)),
+  load(),//store inintialstate
+  composeWithDevTools(applyMiddleware(...middleware,save())),
 )
 
 const App = () => (

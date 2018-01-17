@@ -2,37 +2,45 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import Movie from './movie';
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+import {getMovies} from './actions'
 
 
 class MoviesList extends PureComponent {
-  state ={
-    movies: [],
-  }
-
-  async componentDidMount() {
-    try {
-      const res = await fetch('https://api.themoviedb.org/3/discover/movie?api_key=65e043c24785898be00b4abc12fcdaae&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1');
-      const movies = await res.json();
-      console.log(movies)
-      this.setState({
-        movies: movies.results,
-      });
-    } catch (e) {
-      console.log(e);
-    }
+   componentDidMount() {
+    const{getMovies,isLoaded, moviesLoadedAt} = this.props
+    const oneHour = 1000;
+    if(!isLoaded || ((new Date())-moviesLoadedAt)>oneHour){
+      getMovies()
+    } 
   }
 
   render() {
+    const{movies,isLoaded} = this.props
+    if(!isLoaded)return <h1>loading</h1>
     return (
       <MovieGrid>
-        {this.state.movies.map(movie => <Movie key={movie.id} movie={movie} desc={movie.desc} />)}
+        {movies.map(movie => <Movie key={movie.id} movie={movie} desc={movie.desc} />)}
       </MovieGrid>
 
     );
   }
 }
 
-export default MoviesList;
+const mapStateToProps = (state) => ({
+  movies: state.movies.movies,
+  isLoaded: state.movies.moviesLoaded,
+  moviesLoadedAt:state.movies.moviesLoadedAt,
+
+})
+
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  getMovies,
+},dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(MoviesList);
 
 const MovieGrid = styled.div`
   display:grid;
